@@ -99,7 +99,7 @@ endif()
 # Boost ------------------------------------------------------------------------
 
 set(Boost_USE_MULTITHREAD ON)
-set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_LIBS ON CACHE BOOL "Set to ON to force the use of the static libraries.")
 set(Boost_USE_STATIC_RUNTIME OFF)
 
 find_package(Boost 1.68 COMPONENTS system program_options filesystem date_time REQUIRED)
@@ -525,11 +525,11 @@ create_source_groups(${INDEXER_FILES})
 
 target_link_libraries(
 	${APP_INDEXER_NAME}
-	${LIB_PROJECT_NAME}
 	${LIB_GUI_PROJECT_NAME}
 	$<$<BOOL:${BUILD_CXX_LANGUAGE_PACKAGE}>:${LIB_CXX_PROJECT_NAME}>
 	$<$<BOOL:${BUILD_JAVA_LANGUAGE_PACKAGE}>:${LIB_JAVA_PROJECT_NAME}>
 	$<$<BOOL:${BUILD_PYTHON_LANGUAGE_PACKAGE}>:${LIB_PYTHON_PROJECT_NAME}>
+	${LIB_PROJECT_NAME}
 )
 
 if (APPLE)
@@ -606,11 +606,11 @@ create_source_groups(${APP_FILES})
 
 target_link_libraries(
 	${APP_PROJECT_NAME}
-	${LIB_PROJECT_NAME}
 	${LIB_GUI_PROJECT_NAME}
 	$<$<BOOL:${BUILD_CXX_LANGUAGE_PACKAGE}>:${LIB_CXX_PROJECT_NAME}>
 	$<$<BOOL:${BUILD_JAVA_LANGUAGE_PACKAGE}>:${LIB_JAVA_PROJECT_NAME}>
 	$<$<BOOL:${BUILD_PYTHON_LANGUAGE_PACKAGE}>:${LIB_PYTHON_PROJECT_NAME}>
+	${LIB_PROJECT_NAME}
 )
 
 set_property(
@@ -712,10 +712,10 @@ create_source_groups(${TEST_FILES})
 
 target_link_libraries(
 	${TEST_PROJECT_NAME}
-	${LIB_PROJECT_NAME}
-	${LIB_GUI_PROJECT_NAME}
 	$<$<BOOL:${BUILD_CXX_LANGUAGE_PACKAGE}>:${LIB_CXX_PROJECT_NAME}>
 	$<$<BOOL:${BUILD_JAVA_LANGUAGE_PACKAGE}>:${LIB_JAVA_PROJECT_NAME}>
+	${LIB_PROJECT_NAME}
+	${LIB_GUI_PROJECT_NAME}
 )
 
 set_property(

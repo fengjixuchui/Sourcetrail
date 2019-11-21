@@ -8,7 +8,7 @@ Links
 * [Quick Start Guide](https://www.sourcetrail.com/documentation/#QUICKSTARTGUIDE)
 * [Documentation](https://www.sourcetrail.com/documentation)
 * [Changelog](CHANGELOG.md)
-* [Slack Channel](https://join.slack.com/t/sourcetrail/shared_invite/enQtNDc3MjcyOTk5MTc0LTc3NjJiMzI1NDFiOTE2NDZmOWIwMDQzZjA3N2RhOTZlOGMxYmRjOTA1ZGQ3ZDdlNjliZWQ5MDIwOWU1YWZmYzg)
+* [Slack Channel](https://join.slack.com/t/sourcetrail/shared_invite/enQtNDc3MjcyOTk5MTc0LTNhOWZhZjAxZmU1NTM0YjhhMzRhZWE1NTQ2NjQyYjc1ODE2MzViOTliMWUwODBjN2NlMjkwMDc0MjAxMzJkY2E)
 * [Mailing List](https://coati.us12.list-manage.com/subscribe/post?u=3dabab4e475b5ed577d1dcd0f&id=cf7301fc53)
 * [Patreon](https://www.patreon.com/sourcetrail)
 
@@ -23,7 +23,7 @@ Sourcetrail is:
 
 ## Support Sourcetrail via Patreon
 
-The ongoing development and regular software releases are made possible entirely by the support of [these awesome patrons](SPONSORS.md)! If you'd like to join them, please consider [becoming a patron](https://www.patreon.com/sourcetrail) of Souretrail.
+The ongoing development and regular software releases are made possible entirely by the support of [these awesome patrons](SPONSORS.md)! If you'd like to join them, please consider [becoming a patron](https://www.patreon.com/sourcetrail) of Sourcetrail.
 
 ## Using Sourcetrail
 
@@ -51,7 +51,7 @@ If you want to support a certain feature request or you have the same bug that a
 
 ## How to Contribute
 
-Please read and follow the steps in [CONTRIBUTING.md](CONTRIBUTING.md) file.
+Please read and follow the steps in [CONTRIBUTING.md](CONTRIBUTING.md) file. You may want to look out for issues labeled [good first issue](https://github.com/CoatiSoftware/Sourcetrail/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) to find some initial tasks to tackle.
 
 
 # How to Build
@@ -189,7 +189,11 @@ Run CMake with these additional options:
 
 #### Required Tools
 
+##### Visual Studio
+
 ##### Wix 3.11
+
+##### Wix extension for Visual Studio
 
 ##### WinRAR
 
