@@ -75,6 +75,8 @@ set(CMAKE_C_STANDARD 99)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-warning-option -fcolor-diagnostics -fvisibility-inlines-hidden")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+	ADD_COMPILE_OPTIONS(/MP)
 endif()
 
 # For debugging the release build on linux
@@ -102,7 +104,7 @@ set(Boost_USE_MULTITHREAD ON)
 set(Boost_USE_STATIC_LIBS ON CACHE BOOL "Set to ON to force the use of the static libraries.")
 set(Boost_USE_STATIC_RUNTIME OFF)
 
-find_package(Boost 1.68 COMPONENTS system program_options filesystem date_time REQUIRED)
+find_package(Boost 1.67 COMPONENTS system program_options filesystem date_time REQUIRED)
 
 
 # Qt ---------------------------------------------------------------------------
@@ -252,7 +254,7 @@ target_include_directories(${LIB_PROJECT_NAME} SYSTEM
 	"${EXTERNAL_C_INCLUDE_PATHS}"
 )
 
-target_link_libraries(${LIB_PROJECT_NAME} ${LIB_UTILITY_PROJECT_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${LIB_PROJECT_NAME} ${LIB_UTILITY_PROJECT_NAME} ${LIB_GUI_PROJECT_NAME} ${Boost_LIBRARIES})
 
 #configure language package defines
 configure_file(
@@ -301,6 +303,7 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 		msp430asmparser msp430codegen
 		nvptxcodegen
 		powerpcasmparser powerpccodegen
+		riscvasmparser riscvcodegen
 		sparcasmparser sparccodegen
 		systemzasmparser systemzcodegen
 		webassemblyasmparser webassemblycodegen
@@ -433,9 +436,9 @@ add_custom_target(
 add_library(${LIB_GUI_PROJECT_NAME} ${LIB_GUI_FILES} ${CMAKE_BINARY_DIR}/src/lib_gui/productVersion.h)
 
 if(UNIX)
-	target_link_libraries(${LIB_GUI_PROJECT_NAME} ${LIB_UTILITY_PROJECT_NAME} Qt5::Widgets Qt5::Network Qt5::Svg)
+	target_link_libraries(${LIB_GUI_PROJECT_NAME} ${LIB_UTILITY_PROJECT_NAME} ${LIB_PROJECT_NAME} Qt5::Widgets Qt5::Network Qt5::Svg)
 else()
-	target_link_libraries(${LIB_GUI_PROJECT_NAME} ${LIB_UTILITY_PROJECT_NAME} Qt5::Widgets Qt5::Network Qt5::Svg Qt5::WinExtras)
+	target_link_libraries(${LIB_GUI_PROJECT_NAME} ${LIB_UTILITY_PROJECT_NAME} ${LIB_PROJECT_NAME} Qt5::Widgets Qt5::Network Qt5::Svg Qt5::WinExtras)
 endif()
 
 # command for versioning script
@@ -677,8 +680,8 @@ if (APPLE)
 	string(REPLACE ";" " " MACOS_QT_FRAMEWORKS "${MACOS_QT_FRAMEWORKS}")
 
 	set(MACOS_BOOST_DIR "${Boost_INCLUDE_DIR}")
-	STRING(REGEX REPLACE "/lib/cmake/clang" "" MACOS_CLANG_DIR ${Clang_DIR})
-	STRING(REGEX REPLACE "/lib/cmake/Qt5" "" MACOS_QT_DIR ${Qt5_DIR})
+	STRING(REGEX REPLACE "/lib/cmake/clang" "" MACOS_CLANG_DIR "${Clang_DIR}")
+	STRING(REGEX REPLACE "/lib/cmake/Qt5" "" MACOS_QT_DIR "${Qt5_DIR}")
 
 	configure_file(
 		${PROJECT_SOURCE_DIR}/setup/macOS/bundle_install.sh.in

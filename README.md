@@ -2,7 +2,10 @@
 
 [Sourcetrail](https://www.sourcetrail.com/) is a free and open-source cross-platform source explorer that helps you get productive on unfamiliar source code.
 
-Links
+[![Build status](https://ci.appveyor.com/api/projects/status/0c258a2opn3loyc2/branch/master?svg=true)](https://ci.appveyor.com/project/mlangkabel/sourcetrail/branch/master)
+
+
+__Links__
 * [Website](https://www.sourcetrail.com/)
 * [Download](https://www.sourcetrail.com/downloads)
 * [Quick Start Guide](https://www.sourcetrail.com/documentation/#QUICKSTARTGUIDE)
@@ -51,8 +54,9 @@ If you want to support a certain feature request or you have the same bug that a
 
 ## How to Contribute
 
-Please read and follow the steps in [CONTRIBUTING.md](CONTRIBUTING.md) file. You may want to look out for issues labeled [good first issue](https://github.com/CoatiSoftware/Sourcetrail/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) to find some initial tasks to tackle.
-
+* Please read and follow the steps in [CONTRIBUTING.md](CONTRIBUTING.md) file. 
+* You may want to look out for issues labeled [good first issue](https://github.com/CoatiSoftware/Sourcetrail/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) to find some initial tasks to tackle.
+* If you are looking for more information about Sourcetrail software development, please refer to our [wiki](https://github.com/CoatiSoftware/Sourcetrail/wiki).
 
 # How to Build
 
@@ -84,7 +88,7 @@ This is optionally used to speed up rebuilds if found in `PATH`.
 
 ### Required dependencies
 
-#### Boost 1.68
+#### Boost 1.67
 For the __msvc__ compiler pre-built binaries can be downloaded from [sourceforge.net/projects/boost/files/boost-binaries](https://sourceforge.net/projects/boost/files/boost-binaries/)
 
 For building on Unix:
