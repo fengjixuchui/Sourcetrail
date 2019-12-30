@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.8)
 
 if (WIN32 AND (CMAKE_GENERATOR STREQUAL "Ninja"))
 	set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
@@ -305,24 +305,18 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 	link_directories(${LLVM_LIBRARY_DIRS} ${CLANG_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS})
 
 	llvm_map_components_to_libnames(REQ_LLVM_LIBS
-		support core libdriver passes
-		x86asmparser x86codegen
-		aarch64asmparser aarch64codegen
-		amdgpuasmparser amdgpucodegen
-		armasmparser armcodegen
-		bpfasmparser bpfcodegen
-		hexagonasmparser hexagoncodegen
-		lanaiasmparser lanaicodegen
-		mipsasmparser mipscodegen
-		msp430asmparser msp430codegen
-		nvptxcodegen
-		powerpcasmparser powerpccodegen
-		riscvasmparser riscvcodegen
-		sparcasmparser sparccodegen
-		systemzasmparser systemzcodegen
-		webassemblyasmparser webassemblycodegen
-		xcorecodegen
+		support core libdriver passes option
 	)
+	foreach(LLVM_TARGET ${LLVM_TARGETS_TO_BUILD})
+		get_property(lib_deps GLOBAL PROPERTY "LLVMBUILD_LIB_DEPS_LLVM${LLVM_TARGET}CodeGen")
+		list(APPEND REQ_LLVM_LIBS "LLVM${LLVM_TARGET}CodeGen")
+		list(APPEND REQ_LLVM_LIBS "${lib_deps}")
+		get_property(lib_deps GLOBAL PROPERTY "LLVMBUILD_LIB_DEPS_LLVM${LLVM_TARGET}AsmParser")
+		if (NOT "${lib_deps}" STREQUAL "")
+			list(APPEND REQ_LLVM_LIBS "LLVM${LLVM_TARGET}AsmParser")
+			list(APPEND REQ_LLVM_LIBS "${lib_deps}")
+		endif()
+	endforeach()
 
 	set(CLANG_LIBRARIES
 		clangASTMatchers
@@ -752,6 +746,10 @@ set_property(
 
 if (WIN32)
 	set_target_properties(${TEST_PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/bigobj")
+	set_property(
+		TARGET ${TEST_PROJECT_NAME} 
+			PROPERTY VS_DEBUGGER_WORKING_DIRECTORY 
+			"${CMAKE_SOURCE_DIR}/bin/test")
 endif ()
 
 
