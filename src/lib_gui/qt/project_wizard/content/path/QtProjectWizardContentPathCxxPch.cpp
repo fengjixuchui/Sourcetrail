@@ -27,7 +27,6 @@ QtProjectWizardContentPathCxxPch::QtProjectWizardContentPathCxxPch(
 		"<br />"
 		"Leave blank to disable the use of precompiled headers. You can make use of environment "
 		"variables with ${ENV_VAR}.");
-	setAllowEmpty(true);
 	setPlaceholderString("Not Using Precompiled Header");
 }
 
@@ -57,7 +56,7 @@ bool QtProjectWizardContentPathCxxPch::check()
 		std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb = utility::loadCDB(cdbPath);
 		if (!cdb)
 		{
-			QMessageBox msgBox;
+			QMessageBox msgBox(m_window);
 			msgBox.setText("Unable to open and read the provided compilation database file.");
 			msgBox.exec();
 			return false;
@@ -67,7 +66,7 @@ bool QtProjectWizardContentPathCxxPch::check()
 		{
 			if (m_settingsCxxPch->getPchInputFilePath().empty())
 			{
-				QMessageBox msgBox;
+				QMessageBox msgBox(m_window);
 				msgBox.setText(
 					"The provided compilation database file uses precompiled headers. If you want "
 					"to make use of "
@@ -89,7 +88,7 @@ bool QtProjectWizardContentPathCxxPch::check()
 		{
 			if (!m_settingsCxxPch->getPchInputFilePath().empty())
 			{
-				QMessageBox msgBox;
+				QMessageBox msgBox(m_window);
 				msgBox.setText(
 					"The provided compilation database file does not use precompiled headers. The "
 					"specified input file at "

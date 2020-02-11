@@ -9,7 +9,6 @@
 QtProjectWizardContent::QtProjectWizardContent(QtProjectWizardWindow* window)
 	: QWidget(window)
 	, m_window(window)
-	, m_isInForm(false)
 	, m_showFilesFunctor(
 		  std::bind(&QtProjectWizardContent::showFilesDialog, this, std::placeholders::_1))
 {
@@ -23,14 +22,11 @@ void QtProjectWizardContent::load() {}
 
 void QtProjectWizardContent::save() {}
 
+void QtProjectWizardContent::refresh() {}
+
 bool QtProjectWizardContent::check()
 {
 	return true;
-}
-
-bool QtProjectWizardContent::isScrollAble() const
-{
-	return false;
 }
 
 std::vector<FilePath> QtProjectWizardContent::getFilePaths() const
@@ -48,29 +44,39 @@ QString QtProjectWizardContent::getFileNamesDescription() const
 	return QStringLiteral("files");
 }
 
-bool QtProjectWizardContent::isInForm() const
+bool QtProjectWizardContent::isRequired() const
 {
-	return m_isInForm;
+	return m_isRequired;
 }
 
-void QtProjectWizardContent::setIsInForm(bool isInForm)
+void QtProjectWizardContent::setIsRequired(bool isRequired)
 {
-	m_isInForm = isInForm;
-}
-
-QLabel* QtProjectWizardContent::createFormLabel(QString name) const
-{
-	QLabel* label = new QLabel(name);
-	label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	label->setObjectName(QStringLiteral("label"));
-	label->setWordWrap(true);
-	return label;
+	m_isRequired = isRequired;
 }
 
 QLabel* QtProjectWizardContent::createFormTitle(QString name) const
 {
 	QLabel* label = new QLabel(name);
 	label->setObjectName(QStringLiteral("titleLabel"));
+	label->setWordWrap(true);
+	return label;
+}
+
+QLabel* QtProjectWizardContent::createFormLabel(QString name) const
+{
+	if (m_isRequired)
+	{
+		name += QStringLiteral("*");
+	}
+
+	return createFormSubLabel(name);
+}
+
+QLabel* QtProjectWizardContent::createFormSubLabel(QString name) const
+{
+	QLabel* label = new QLabel(name);
+	label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	label->setObjectName(QStringLiteral("label"));
 	label->setWordWrap(true);
 	return label;
 }
@@ -90,7 +96,8 @@ QToolButton* QtProjectWizardContent::createSourceGroupButton(QString name, QStri
 QtHelpButton* QtProjectWizardContent::addHelpButton(
 	const QString& helpTitle, const QString& helpText, QGridLayout* layout, int row) const
 {
-	QtHelpButton* button = new QtHelpButton(helpTitle, helpText);
+	QtHelpButton* button = new QtHelpButton(QtHelpButtonInfo(helpTitle, helpText));
+	button->setMessageBoxParent(m_window);
 	layout->addWidget(button, row, QtProjectWizardWindow::HELP_COL, Qt::AlignTop);
 	return button;
 }
@@ -126,7 +133,7 @@ QFrame* QtProjectWizardContent::addSeparator(QGridLayout* layout, int row) const
 void QtProjectWizardContent::filesButtonClicked()
 {
 	m_window->saveContent();
-	m_window->loadContent();
+	m_window->refreshContent();
 
 	std::thread([&]() {
 		const std::vector<FilePath> filePaths = getFilePaths();
@@ -138,8 +145,8 @@ void QtProjectWizardContent::showFilesDialog(const std::vector<FilePath>& filePa
 {
 	if (!m_filesDialog)
 	{
-		m_filesDialog = std::make_shared<QtTextEditDialog>(
-			getFileNamesTitle(), QString::number(filePaths.size()) + " " + getFileNamesDescription());
+		m_filesDialog = new QtTextEditDialog(
+			getFileNamesTitle(), QString::number(filePaths.size()) + " " + getFileNamesDescription(), m_window);
 		m_filesDialog->setup();
 
 		m_filesDialog->setText(utility::join(utility::toWStrings(filePaths), L"\n"));
@@ -147,12 +154,12 @@ void QtProjectWizardContent::showFilesDialog(const std::vector<FilePath>& filePa
 		m_filesDialog->setReadOnly(true);
 
 		connect(
-			m_filesDialog.get(),
+			m_filesDialog,
 			&QtTextEditDialog::finished,
 			this,
 			&QtProjectWizardContent::closedFilesDialog);
 		connect(
-			m_filesDialog.get(),
+			m_filesDialog,
 			&QtTextEditDialog::canceled,
 			this,
 			&QtProjectWizardContent::closedFilesDialog);
@@ -165,7 +172,8 @@ void QtProjectWizardContent::showFilesDialog(const std::vector<FilePath>& filePa
 void QtProjectWizardContent::closedFilesDialog()
 {
 	m_filesDialog->hide();
-	m_filesDialog.reset();
+	m_filesDialog->deleteLater();
+	m_filesDialog = nullptr;
 
 	window()->raise();
 }

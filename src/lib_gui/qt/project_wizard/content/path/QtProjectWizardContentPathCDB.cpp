@@ -25,6 +25,7 @@ QtProjectWizardContentPathCDB::QtProjectWizardContentPathCDB(
 		"<br />"
 		"You can make use of environment variables with ${ENV_VAR}.");
 	setFileEndings({L".json"});
+	setIsRequired(true);
 }
 
 void QtProjectWizardContentPathCDB::populate(QGridLayout* layout, int& row)
@@ -50,7 +51,7 @@ void QtProjectWizardContentPathCDB::populate(QGridLayout* layout, int& row)
 	layout->addWidget(description, row, QtProjectWizardWindow::BACK_COL);
 	row++;
 
-	QLabel* title = createFormLabel("Source Files to Index");
+	QLabel* title = createFormSubLabel("Source Files to Index");
 	layout->addWidget(title, row, QtProjectWizardWindow::FRONT_COL, Qt::AlignTop);
 	layout->setRowStretch(row, 0);
 
@@ -67,6 +68,16 @@ void QtProjectWizardContentPathCDB::load()
 {
 	m_picker->setText(QString::fromStdWString(m_settings->getCompilationDatabasePath().wstr()));
 
+	refresh();
+}
+
+void QtProjectWizardContentPathCDB::save()
+{
+	m_settings->setCompilationDatabasePath(FilePath(m_picker->getText().toStdWString()));
+}
+
+void QtProjectWizardContentPathCDB::refresh()
+{
 	m_filePaths.clear();
 
 	if (m_fileCountLabel)
@@ -75,11 +86,6 @@ void QtProjectWizardContentPathCDB::load()
 			"<b>" + QString::number(getFilePaths().size()) +
 			"</b> source files were found in the compilation database.");
 	}
-}
-
-void QtProjectWizardContentPathCDB::save()
-{
-	m_settings->setCompilationDatabasePath(FilePath(m_picker->getText().toStdWString()));
 }
 
 std::vector<FilePath> QtProjectWizardContentPathCDB::getFilePaths() const
