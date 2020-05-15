@@ -72,8 +72,9 @@ if(UNIX AND NOT APPLE)
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD 11)
 
 
 # Settings ---------------------------------------------------------------------
@@ -129,7 +130,32 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 	if (LLVM_FOUND)
 		message(STATUS "Found LLVM ${LLVM_VERSION}")
 	endif()
+		
+	if (UNIX)
+		set(LLVM_CONFIGURATION_TYPES ".")
+	endif()
+	
+	set (CLANG_COMPILER_HEADER_SEARCH_PATH "")
+	foreach(LLVM_CONFIGURATION_TYPE ${LLVM_CONFIGURATION_TYPES})
+		if (CLANG_COMPILER_HEADER_SEARCH_PATH STREQUAL "")
+			set (CLANG_COMPILER_HEADER_SEARCH_PATH "${LLVM_BINARY_DIR}/${LLVM_CONFIGURATION_TYPE}/lib/clang/${LLVM_VERSION}/include") 
+			message (STATUS "Trying to find Clang compiler headers in '${LLVM_CONFIGURATION_TYPE}' build config in directory '${CLANG_COMPILER_HEADER_SEARCH_PATH}'.")
+			if (EXISTS ${CLANG_COMPILER_HEADER_SEARCH_PATH})
+				message (STATUS "Found headers for '${LLVM_CONFIGURATION_TYPE}' build config.")
+				file(GLOB_RECURSE CLANG_COMPILER_HEADER_PATHS RELATIVE "${CLANG_COMPILER_HEADER_SEARCH_PATH}" "${CLANG_COMPILER_HEADER_SEARCH_PATH}/*") 
+				foreach(CLANG_COMPILER_HEADER_PATH ${CLANG_COMPILER_HEADER_PATHS})
+					configure_file("${CLANG_COMPILER_HEADER_SEARCH_PATH}/${CLANG_COMPILER_HEADER_PATH}" "${CMAKE_SOURCE_DIR}/bin/app/data/cxx/include/${CLANG_COMPILER_HEADER_PATH}" COPYONLY)
+				endforeach()
+			else ()
+				set (CLANG_COMPILER_HEADER_SEARCH_PATH "")
+			endif ()
+		endif ()
+	endforeach()
 
+	if (CLANG_COMPILER_HEADER_SEARCH_PATH STREQUAL "")
+		message(FATAL_ERROR "Unable to copy Clang compiler headers from clang build dir.")
+	endif()
+	
 endif()
 
 
@@ -366,6 +392,7 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 	target_link_libraries(${LIB_CXX_PROJECT_NAME} ${LIB_UTILITY_PROJECT_NAME} ${CLANG_LIBRARIES} ${REQ_LLVM_LIBS})
 
 	if (WIN32)
+		target_compile_definitions(${LIB_CXX_PROJECT_NAME} PRIVATE _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS) # Due to Clang
 		target_link_libraries(${LIB_CXX_PROJECT_NAME} version)
 	endif()
 
